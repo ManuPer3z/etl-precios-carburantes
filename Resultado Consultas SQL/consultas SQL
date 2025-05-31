@@ -1,0 +1,86 @@
+CREATE DATABASE estaciones_db;
+USE estaciones_db;
+
+
+CREATE TABLE Provincias (
+    id_provincia INT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Municipios (
+    id_municipio INT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    id_provincia INT NOT NULL,
+    FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
+);
+
+CREATE TABLE Localidades (
+    id_localidad INT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    id_municipio INT NOT NULL,
+    FOREIGN KEY (id_municipio) REFERENCES Municipios(id_municipio)
+);
+
+CREATE TABLE Estaciones (
+    id_estacion INT PRIMARY KEY,
+    direccion VARCHAR(100),
+    codigo_postal VARCHAR(5),
+    latitud DECIMAL(10, 7),
+    longitud DECIMAL(10, 7),
+    tipo ENUM('terrestre', 'maritima'),
+    rotulo VARCHAR(50),
+    tipo_venta VARCHAR(100),
+    rem VARCHAR(100),
+    margen VARCHAR(5),
+    id_localidad INT NOT NULL,
+    FOREIGN KEY (id_localidad) REFERENCES Localidades(id_localidad)
+);
+
+CREATE TABLE Combustibles (
+    id_combustible INT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Precios (
+    id_precio INT AUTO_INCREMENT PRIMARY KEY,
+    id_estacion INT NOT NULL,
+    id_combustible INT NOT NULL,
+    fecha_toma_datos DATE,
+    precio DECIMAL(5, 2),
+    FOREIGN KEY (id_estacion) REFERENCES Estaciones(id_estacion),
+    FOREIGN KEY (id_combustible) REFERENCES Combustibles(id_combustible)
+);
+
+CREATE TABLE Horarios (
+    id_horario INT AUTO_INCREMENT PRIMARY KEY,
+    id_estacion INT NOT NULL,
+    horario VARCHAR(100),
+    tipo_servicio VARCHAR(50),
+    FOREIGN KEY (id_estacion) REFERENCES Estaciones(id_estacion)
+);
+
+-- necesario para pasar datos
+SET GLOBAL local_infile = 1;
+
+-- subi mal el fichero por eso tuve que borrar datos
+
+DELETE FROM Provincias;
+
+
+ALTER TABLE Estaciones
+MODIFY COLUMN rotulo VARCHAR(100);
+
+ALTER TABLE Estaciones
+MODIFY COLUMN direccion VARCHAR(150);
+
+
+INSERT INTO Estaciones (id_estacion, direccion, codigo_postal, latitud, longitud, tipo, rotulo, tipo_venta, rem, margen, id_localidad)
+VALUES (0, 'Dirección genérica', '00000', 0.0, 0.0, 'terrestre', 'Genérico', 'N/A', 'N/A', 'N', 1);
+
+ALTER TABLE Precios
+MODIFY COLUMN precio DECIMAL(7, 2);
+
+ALTER TABLE Horarios
+MODIFY COLUMN tipo_servicio VARCHAR(500);
+
+DELETE FROM Horarios;

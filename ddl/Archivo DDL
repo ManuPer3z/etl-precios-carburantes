@@ -1,0 +1,95 @@
+create table Combustibles
+(
+    id_combustible int         not null
+        primary key,
+    nombre         varchar(50) not null
+);
+
+create table Provincias
+(
+    id_provincia int         not null
+        primary key,
+    nombre       varchar(50) not null
+);
+
+create table Municipios
+(
+    id_municipio int         not null
+        primary key,
+    nombre       varchar(50) not null,
+    id_provincia int         not null,
+    constraint Municipios_ibfk_1
+        foreign key (id_provincia) references Provincias (id_provincia)
+);
+
+create table Localidades
+(
+    id_localidad int         not null
+        primary key,
+    nombre       varchar(50) not null,
+    id_municipio int         not null,
+    constraint Localidades_ibfk_1
+        foreign key (id_municipio) references Municipios (id_municipio)
+);
+
+create table Estaciones
+(
+    id_estacion   int                            not null
+        primary key,
+    direccion     varchar(100)                   null,
+    codigo_postal varchar(5)                     null,
+    latitud       decimal(10, 7)                 null,
+    longitud      decimal(10, 7)                 null,
+    tipo          enum ('terrestre', 'maritima') null,
+    rotulo        varchar(50)                    null,
+    tipo_venta    varchar(100)                   null,
+    rem           varchar(100)                   null,
+    margen        varchar(5)                     null,
+    id_localidad  int                            not null,
+    constraint Estaciones_ibfk_1
+        foreign key (id_localidad) references Localidades (id_localidad)
+);
+
+create index id_localidad
+    on Estaciones (id_localidad);
+
+create table Horarios
+(
+    id_horario    int auto_increment
+        primary key,
+    id_estacion   int          not null,
+    horario       varchar(100) null,
+    tipo_servicio varchar(50)  null,
+    constraint Horarios_ibfk_1
+        foreign key (id_estacion) references Estaciones (id_estacion)
+);
+
+create index id_estacion
+    on Horarios (id_estacion);
+
+create index id_municipio
+    on Localidades (id_municipio);
+
+create index id_provincia
+    on Municipios (id_provincia);
+
+create table Precios
+(
+    id_precio        int auto_increment
+        primary key,
+    id_estacion      int           not null,
+    id_combustible   int           not null,
+    fecha_toma_datos date          null,
+    precio           decimal(5, 2) null,
+    constraint Precios_ibfk_1
+        foreign key (id_estacion) references Estaciones (id_estacion),
+    constraint Precios_ibfk_2
+        foreign key (id_combustible) references Combustibles (id_combustible)
+);
+
+create index id_combustible
+    on Precios (id_combustible);
+
+create index id_estacion
+    on Precios (id_estacion);
+
