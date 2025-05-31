@@ -45,6 +45,7 @@ app_gasolinas/
 
 ## 📸 Modelo relacional
 
+![Modelo relacional](Modelo%20Relacional.png)
 
 
 ---
